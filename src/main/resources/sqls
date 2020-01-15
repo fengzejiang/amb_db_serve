@@ -1,0 +1,58 @@
+create OR REPLACE PROCEDURE PPROCMES3(
+    FmDate in varchar2:='',
+    ToDate in varchar2:='',
+    ClientID in varchar2 :='',
+    SysMLFlag in varchar2 :='zh-cn',
+    Org in varchar2 :='test11',
+    Monitorcode in varchar2 :='',   		--1#高炉BFG发生量,1#炉热风炉使用量
+    def_user in varchar2 :='ngmesuser',
+    rt out pkg_ambmes.ambcursor) is
+    v_sql VARCHAR2(8000):='';
+    vdoc_type VARCHAR2(20):='FZ01';--单据类型,能源表
+    vdef VARCHAR2(2):='123';--缺省值，为空值
+begin
+    v_sql := '
+ Select
+  ''process'' "biz_type"
+  ,'''||vdoc_type||''' "doc_type"
+  ,'''||vdoc_type||''' "doc_type_name"
+  ,d.C_FACTORYID "org"
+  ,'''||vdef||''' "person"
+  ,''NGMES_F1'' "src_doc_id"
+  ,''NGMSE_F1'' "src_doc_type"
+  ,''tpp_ems_data_11'' "src_key_id"
+  ,''tpp_ems_data_11'' "src_key_type"
+  ,d.C_ID "doc_no"
+  ,substr(d.c_accdate,0,10) "doc_date"
+  ,d.d.C_FACTORYID "fm_org"
+  ,'''||vdef||''' "fm_dept"
+  ,'''||vdef||''' "m_wh"
+  ,'''||vdef||''' "fm_person"
+  ,'''||vdef||''' "to_org"
+  ,'''||vdef||''' "to_dept"
+  ,'''||vdef||''' "to_wh"
+  ,'''||vdef||''' "to_person"
+  ,''Process_ems_data'' "direction"
+  ,'''||vdef||''' "trader"
+  ,d.c_monitorcode "item"
+  ,d.C_MONITORDESC "item_name"
+  ,'''||vdef||''' "lot"
+  ,'''||vdef||''' "oject"
+  ,''T'' "uom"
+  ,d.c_totalvalue/348.35 "qty"
+  ,0 "price"
+  ,0 "money"
+  ,d.C_MONITORGROUP "memo"
+   From '||def_user||'.tpp_ems_data d';
+--     v_sql:=v_sql||'Where (1=1)';
+--     v_sql :=v_sql||' and d.c_monitorcode in('||Monitorcode||')';
+-- --     insert into TEST(SQLS) values (v_sql);
+--     If FmDate is not null then
+--         v_sql :=v_sql||' and d.c_accdate>='''||FmDate||' 00:00:00''';
+--     end if;
+--     If ToDate is not null then
+--         v_sql :=v_sql||' and d.c_accdate<='''||ToDate||' 23:59:59''';
+--     end if;
+--     insert into TEST(SQLS) values (v_sql);
+    open rt for v_sql;
+end PPROCMES3;
